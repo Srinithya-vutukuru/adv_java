@@ -1,6 +1,11 @@
 package com.sg;
+
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 public class Account {
     private double balance;
+    private Lock balLock = new ReentrantLock();
 
     public Account(double balance) {
         this.balance = balance;
@@ -24,33 +29,33 @@ public class Account {
         this.balance = balance;
     }
 
-    public synchronized  void deposit(String name, double amt) {
-        System.out.println(name + " trying to deposit " + amt);
-        System.out.println(name + " getting balance");
-        double bal = getBalance();
-        System.out.println(name + " got balance : " + bal);
-        bal += amt;
-        System.out.println(name + " setting balance : " + bal);
-        setBalance(bal);
-        notifyAll();
+    public void deposit(String name, double amt) {
+        try {
+        	balLock.lock();
+			System.out.println(name + " trying to deposit " + amt);
+			System.out.println(name + " getting balance");
+			double bal = getBalance();
+			System.out.println(name + " got balance : " + bal);
+			bal += amt;
+			System.out.println(name + " setting balance : " + bal);
+			setBalance(bal);
+		} finally {
+			balLock.unlock();
+		}
     }
 
-    public synchronized void withdraw(String name, double amt) {
-        System.out.println(name + " trying to withdraw " + amt);
-        while(amt > getBalance()) {
-        	System.out.println("Insifficient Balance !!!");
-        	try {
-				wait(3000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-        }
-        System.out.println(name + " getting balance");
-        double bal = getBalance();
-        System.out.println(name + " got balance : " + bal);
-        bal -= amt;
-        System.out.println(name + " setting balance : " + bal);
-        setBalance(bal);
+    public void withdraw(String name, double amt) {
+        try {
+        	balLock.lock();
+			System.out.println(name + " trying to withdraw " + amt);
+			System.out.println(name + " getting balance");
+			double bal = getBalance();
+			System.out.println(name + " got balance : " + bal);
+			bal -= amt;
+			System.out.println(name + " setting balance : " + bal);
+			setBalance(bal);
+		} finally{
+			balLock.unlock();
+		}
     }
 }

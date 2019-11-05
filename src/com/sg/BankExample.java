@@ -16,14 +16,6 @@ public class BankExample {
 		
 		t4.start();
 		t3.start();
-		
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		
 		t1.start();
 		t2.start();
 		
