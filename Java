@@ -1,0 +1,111 @@
+Day2
+------
+	Java Concuurency --> Multi-threaded applications
+
+	Process --> Program in execution. A process should have at least one unit of work.
+	Thread is a unit of work.
+
+	Notepad, Calculator, --> single Threaded applications
+
+	Word, Excel, Eclipse, Browser --> Multi-threaded apllications
+
+		Word --> spell check, grammer check, auto saving, count words, editing
+
+		Eclipse -->Code typing, syntax errors, intelli sense, Compiler
+
+	Why Multi-threaded applications:
+		a) Better user experience
+		b) Avoids Starvation
+		c) Optimization of available resources
+
+	From JVM perspective
+		A process will have a Heap-Area, MetaSpace/PermGen created
+		Objects reside in Heap-Area
+		Classes reside in MetaSpace
+		and for every thread a seperate stack and PC is created
+
+			**************************************************
+
+			Main thread - method1 - method2 - etc....
+			Secoond thread - run method()
+			.......		
+
+			**************************************************
+		interface Runnable {
+			void run();
+		}
+
+	Thread class has thread control methods:
+		a) start() (start(0) pushes run method on stack) -- > ready state(runnable)
+		b) sleep(ms) (to pause a thread)
+		c) join() 
+		d) yield() (prempt a running thread)
+		e) interrupt() (to resume a thread)
+	
+		Deprecated methods:
+		f) stop() (thread dies)
+		g) suspend() (Idle infinite state till rersume()) 
+		h) resume()
+
+		******************************************************
+			Windows, Linux etc.. premptive os..
+											-->run()		->succes()
+			new thread - (ready or runnble) ------- Running -----------Dead
+									.		<-- yield()
+									| (interrupt)		| (sleep)
+														.
+									Idle-----------------
+
+			(Semaphore flag =False for stoping thread)
+			
+			public void run(){
+				while(Employee e = employee.next() && flag){
+					set employee HRA
+					.....
+					compute total salary
+				}
+			}
+		******************************************************
+
+		Thread safety :
+			A member is said to thread safe if it doesnt get corrupted in Multi-threaded enviroment.
+
+		instance variables --> Heap-Area --> shared --> not safe
+		static variables ---> Metaspace -->shared --> not safe
+		local variables --> Stack -->not shared -->safe
+		immutable objects --> Heap-Area -->shared -->safe
+
+			*****************************************
+			use only getters NO Setters
+			*****************************************
+
+		volatile variables:
+			--> marker to inform that we dont need an optimisaton
+
+			*****************************************
+			volatile boolean are thread safe
+			***************************************** 
+
+		Atomic integers -> Reaad - > Compute - > Read && Compare - > Write
+
+		Java Concuurency - Doug Lee Book
+ ***************************http:\\collabedit.com\k4k72**************************
+
+
+		synchronized 
+
+		Issuues with Java Threads and how its resolved in new APIs
+
+		a) synchronized
+			--> Only one lock/mutex per object and one per Class
+			--> Only owner can release the lock
+			--> Can result in deadlock
+
+		b) Runnable
+			void run();
+
+			--> Cant throw an Exception
+			--> Cant return a value
+
+		c) Thread Pool
+			
