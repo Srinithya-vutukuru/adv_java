@@ -1,2 +1,2 @@
-module day1 {
+module Day2 {
 }
