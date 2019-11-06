@@ -1,0 +1,745 @@
+
+Adv Java
+Banuprakash C
+Co-founder Lucida Technologies Pvt Ltd.,
+Full Stack Architect
+banu@lucidatechnologies.com
+banuprakashc@yahoo.co.in
+-------------------------------------------
+
+    Topic 1: Annotation
+    -------------------
+    Available from Java 5:
+    What is Annotation?
+    --> It's a metadata [ Data about data]
+    @Inject
+    @Autowired
+    @Service
+    @Override
+
+    a) This metadata can be placed on TYPE [ Class , interface, Annotation, Enum ],
+    methods [ @Override], Fields 
+    b) Annotations can be used by:
+        i) Compiler
+
+
+    public class Account {
+
+            String getInfo() {
+
+            }
+    }
+
+    public class SavingsAccount extends Account {
+
+        @Override
+        String getInfos() {
+
+        }
+    }
+
+
+    Account a = new SavingsAccount();
+    String  str = a.getInfo();
+
+        ii) RUNTIME
+
+        http://sg.com/products
+
+        @RequestMapping("/products")
+        class Product {
+
+        }
+
+
+        iii) ClassLoader
+
+        @Mobile(os="Android")
+        public class PubG extends Game{
+
+        }
+
+    -----------
+
+    Annotations can have only properties, no fields and methods.
+
+    Properties can be used on Right-hand side and left-hand side
+    GETTER
+    x = name
+    SETTER
+    name = x
+
+    ---------------
+    ORM --> Object Relational Mapping
+
+    @Table
+    @Column
+
+    
+    @Table(name="books")
+    public class Book {
+
+        @Column(name="book_id", type="NUMERIC(10)")
+        id;
+
+
+        @Column(name="title")
+        title;
+
+
+        @Column(name="amount", type="NUMERIC(12,2)")
+        price;
+    }
+
+
+    Book b = new Book();
+    save(b);
+
+    a) Strings are immutable, every time a new string object is created on using +.
+    b) String literal usage adds the object to "pool" and it is not garbage collected
+
+
+    String s = ""; // 
+
+    s += "Create table";
+
+    s += "books";
+
+    ....
+
+
+    String s = new String(); // eligible for GC
+
+
+    Choose between StringBuffer [Thread Safe] and StringBuilder [ Not Thread safe ]
+
+    public static String getInsertSQL(Object obj) {
+        StringBuilder builder = new StringBuilder();
+        Table t = obj.getClass().getAnnotation(Table.class); 
+        if( t != null ) {
+            builder.append("insert into ");
+            builder.append(t.name()); 
+            builder.append(" values ("); //insert into books values (
+            Method[] methods = obj.getClass().getDeclaredMethods();
+            for(Method m : methods) {
+                if(m.getName().startsWith("get")) {
+                    Column c = m.getAnnotation(Column.class);
+                    if( c != null) {
+                         try {
+                             Object ret = m.invoke(obj);
+                             if(ret instanceof String) {
+                                 builder.append("'");
+                                 builder.append(ret);
+                                 builder.append("'");
+                             } else {
+                                 builder.append(ret);
+                             }
+                             builder.append(",");
+                         } catch(Exception e) { e.printStackTrace(); }
+                    }
+                }
+            }
+            builder.setCharAt(builder.lastIndexOf(","), ')');
+        }
+        
+        return builder.toString();
+    }
+============================================================================================
+
+    Generic Collections
+
+    Java Collection Frameworks
+        a) interfaces
+        b) implementation classes
+        c) Algorithm classes
+==============================================
+
+    Java 8 features:
+    a) Lambda expressions
+
+    Anonymous classes
+
+    interface Flyable {                     Flyable f = new Bird();
+            void fly();                     Flyable f = new AeroPlane();
+    }
+
+
+    class Bird implements Flyable {
+            public void fly() {}
+    }
+
+    class AeroPlane implements Flyable {
+            public void fly() { }
+    }
+
+
+    class Dummy1 implements Flyable {
+            public void fly() { }
+    }
+
+    class Dummy2 implements Flyable {
+            public void fly() { }
+    }
+
+
+    Flyable f = new Flyable() {
+        public void fly() { "Jump from 3rd floor!!!"}
+    }
+
+    =================
+
+    Functional Interface:
+        An interface with only one method to implement.
+
+        Java 8 added the following functional interfaces:
+        a) Function
+        b) BiFunction
+        c) Consumer
+        d) Supplier
+        e) Predicate
+
+
+        interface TempratureCalculator {
+            double centigrateToFarehnhiet(double val);
+
+            default double FareinheitToCentigrate(double val) {
+                    double r = centigrateToFarehnhiet(double val);
+                    // do conversion 
+            }
+        }
+
+        ==========
+
+        Compiled from "Test.java"
+public class com.sg.client.Test {
+  java.util.function.Function<java.lang.Integer, java.lang.Double> f1;
+
+  public com.sg.client.Test();
+    Code:
+       0: aload_0
+       1: invokespecial #12                 // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: new           #14                 // class com/sg/client/Test$1
+       8: dup
+       9: aload_0
+      10: invokespecial #16                 // Method com/sg/client/Test$1."<init>":(Lcom/sg/client/Test;)V
+      13: putfield      #19                 // Field f1:Ljava/util/function/Function;
+      16: return
+}
+
+public class com.sg.client.Test {
+  java.util.function.Function<java.lang.Integer, java.lang.Double> f3;
+
+  public com.sg.client.Test();
+    Code:
+       0: aload_0
+       1: invokespecial #12                 // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: invokedynamic #14,  0             // InvokeDynamic #0:apply:()Ljava/util/func
+tion/Function;
+      10: putfield      #18                 // Field f3:Ljava/util/function/Function;
+
+----------------------------------------------------------------------------------------
+
+Generic Collections
+
+    Java Collection Frameworks
+        a) interfaces
+        b) implementation classes
+        c) Algorithm classes
+
+
+
+        void sort(Comparable[] elems) {
+
+        }
+
+        http://collabedit.com/k4k72
+
+
+        List list = new ArrayList();
+
+        List list = new LinkedList();
+
+        list.add("A");
+        list.add(44);
+        list.add(new Book());
+
+
+        List<Product> products = new ArrayList<>();
+
+        =========================================================
+
+        Arrays are co-variant
+        Generic Collections are not co-variant
+
+        Object obj = new String(); // upcasting
+
+        Object[] elems = new String[3]; // valid
+        elems[0] = new String("st");
+        elems[1] = new Book(); // Compiles ,but throws ArrayStoreException at runtime
+
+
+        List<Object> list = new ArrayList<String>(); // error
+
+        SOLID
+
+        S --> Single Responsibility
+        O --> Open Close Principle
+
+=====================
+
+    Functional Style of Programming
+
+    OOP                                             functional style
+--> Tightly coupled to state of object                  not coupled
+--> methods                                             High Order funtions 
+                                                        which are not coupled to any specific
+                                                        object
+
+        HOF are functions which:
+            a) accept other functions as arguments
+            b) return a function
+
+    Common HOFs used on streams:
+        a) map ==> Transform the data
+        b) filter
+        c) reduce
+        d) flatMap
+        e) collect
+        f) forEach
+
+        Intermediary Operations: map, filter, flatMap, skip, limit
+        Terminal Operations: reduce, collect, forEach
+
+
+
+        filter(data, PredicateFn) {
+            create a empty container
+            loop data
+                if(predicateFn)
+                    add to container
+            end loop
+            return container;
+        }
+
+    ==============
+
+    HashCode?
+        a) Two similar objects should have same hash code
+        b) two dis-similar objects can also have same hash code.
+========================
+
+Day 2
+-----
+    Java Concurrency --> Multi-threaded applications
+
+    Process --> Program in execution. A process should have at least one unit of work.
+    Thread is a unit of work
+
+    Notepad, Calculator, --> single Threaded applications
+
+    Word, Excel, Eclipse, Browser --> Multi threaded application
+
+        Word --> spell check, grammer check, auto saving, count words, editing
+
+        Eclipse ==> Code typing, syntax errors, intelli sense, compile
+
+    Why Multi-threaded applications:
+        a) Better user experince
+        b) Avoids Starvation
+        c) Optimization of available resources
+
+    From JVM perspective 
+        A process will have a Heap area, MetaSpace/PermGen created
+        Objects recide in heap
+        Classes recide in MetaSpace
+        and for every thread a seperate stack and PC is created
+
+
+        interface Runnable {
+                void run();
+        }   
+
+
+    Thread class has Thread control methods:
+        a) start()
+        b) sleep(ms)
+        c) join()
+        d) yield()
+        e) interrupt()
+
+        deprecited methods:
+        f) stop()
+        g) suspend()
+        i) resume()
+
+
+        Semaphore flag;
+        or
+        boolean flag;
+
+        public void run() {
+                while(Employee e = employees.next() && flag) {
+                        set employee HRA
+                        set employee BA
+                        set employee TE
+                        compute total salary
+                } 
+        }
+
+        -------------------------
+
+
+        Thread Safety
+
+            A member is said to be thread safe if it doesn't get corrupted in multi threaded environment
+
+        instance variables --> HEAP --> shared --> not safe
+        static varaibles ---> MetaSpace --> shared --> not safe
+        local variables --> Stack --> not shared --> Safe
+        immutable objects --> HEAP --> Shared --> Safe
+
+        public class Employee {
+                id, name, email;
+
+                Employee(id, name, email) {}
+
+                getters
+        }
+
+        -----
+
+        volatile variables?
+            --> marker to inform that we don't need optimization
+
+        synchronized
+
+        Issues with Java Threads and how it's resolved in new APIs
+
+        a) synchronized
+            --> Only one lock/mutex per object and one per class
+            --> Only owner can release the lock
+            --> Can result in Deadlock
+
+
+        class BankingService {
+                public void transferFunds(Account from, Account to, double amt){
+                        synchronized(from) {
+                                synchronized(to) {
+                                        from.withdraw(amt);
+                                        to.deposit(amt);
+                                }
+                        }
+                }
+        }
+
+        b) Runnable
+            void run();
+
+            --> Can't Throw an exception
+            --> Can't return a value
+
+
+        c) Thread Pool
+
+
+        copy Account, Ttype, Tthread and BankExample
+
+
+
+
+        class BankingService {
+                public void transferFunds(Account from, Account to, double amt){
+                        if(from.balLock.tryLock()) {
+                         try{
+                                                
+                                            if(to.balLock.tryLock()) {
+                                                try {
+                                                    from.withdraw(amt);
+                                                    to.deposit(amt);
+                                                 }
+                                                 finally {
+                                                    to.balLock.unlock();
+                                                }
+                                            }
+                                }
+                            } finally {
+                                    from.balLock.unlock();
+                            }
+                }
+        }
+
+            while(amt > getBalance()) {
+                balLock.newCondition().await();
+            }
+
+    Callable and Future to solve Runnable issues of return value
+
+    interface Runnable {
+            void run();
+    }
+
+    interface Callable<T> {
+            T call() throws Exception;
+    }
+
+    The returned value of Callable is Future
+
+
+    ---------
+
+    CompletableFuture extends Future implements CompletionStage
+
+
+
+    service = ...
+
+    Future<Data> f1  = service.submit(...);
+
+
+    if(f1.isDone()) {
+        Data d = f1.get();
+        Future<SomeOtherData> f2 = service.submit(... pass d );
+    }
+---------------------------------------------------------------------------
+
+
+List<Integer> list = new ArrayList<>();
+        list.add(44);
+        list.add(55);
+        
+        Iterator<Integer> iter = list.iterator();
+        while(iter.hasNext()) {
+            list.add(0,4);
+            System.out.println(iter.next());
+        }
+
+-----------------------------------------------------------------------
+
+List<Integer> list = new ArrayList<>();
+        list.add(44);
+        list.add(55);
+        
+        List<Integer> other = Collections.synchronizedList(list);
+        
+        Thread t1 = new Thread(() ->  {
+            other.add(88);
+            other.add(33);
+        }); 
+        
+        Thread t2 = new Thread(() ->  {
+            other.add(28);
+            other.add(113);
+        }); 
+        
+        t1.start();
+        t2.start();
+        
+        System.out.println(other);
+------------------------------------------
+
+
+Day 3:
+------
+    JDBC --> Java Database connectivity
+    It's an Integration API to connect to RDBMS
+    Java provides interfaces, Implementation classes are provided by database vendors
+    We need to hava vendor provided "jars"
+
+    Connection interface is provided to establish a database connection.
+
+    Factories:
+    DriverManager/DataSource is used to establish a connection
+
+
+    Java Provides the following interfaces for Sending SQL:
+
+    1) Statement
+        --> If SQL is fixed, [ It's common to all users]
+        select * from products
+    2) PreparedStatement
+        --> If SQL depends on IN parameters
+        INSERT into products values (?,?,?);
+
+        select * from users where username =? and password =?
+
+    3) CallableStatement
+        used to invoke StoredProcedures
+
+    ------------------
+    
+    ResultSet
+        is a cursor to fetched records
+
+        boolean next();
+    --------------------------------------------
+
+    Maven  [ pom.xml]
+        --> Dependency Management tool
+        --> Goals
+    ------------------------------------------
+
+    ORM --> Object Relational Mapping
+        Once Java Objects are mapped to RDBMS, the frameworks will generate
+        DDL and DML
+        ORM Frameworks:
+            Hibernate, TopLink, KODO, OpenJPA, EclipseLink,....
+
+        JPA is a specification for using ORM framework
+
+    Spring --> Lightweight Container for building enterprise applications
+        --> Spring container provides 
+            --> Lifecycle management of objects
+            --> Wires dependencies
+        --> Works on Inversion of Control pattern / Dependecy Injection
+
+    Spring instantiantes classes which has one of these annotations:
+        a) @Component
+        b) @Repository
+        c) @Service
+        d) @Controller
+        e) @RestController
+
+
+    Spring uses @Autowired or @Inject annotations for wiring
+
+
+    public interface ProductDao {
+
+    }
+
+    @Repository
+    public class ProductDaoJdbcImpl implements ProductDao {
+
+    }
+
+    @Repository
+    @Primary
+    public class ProductDaoJpaImpl implements ProductDao {
+
+    }
+
+    @Service
+    public class SampleService {
+            @Autowired
+            <!-- @Qualifier("productDaoJpaImpl") -->
+            private ProductDao productDao;
+    }
+
+
+
+    --------
+
+    Spring provides Declarative Tx support
+
+    Programmatic Tx
+
+
+        class BankingService {
+                public void transferFunds(Account from, Account to, double amt){
+                        try {
+                            con.setAutocommit(false);
+                            SQL1 = "update fromAcc ...";
+                            SQL2 = "update toAcc ...";
+                            SQL3 = "insert into transaction table ....";
+
+                            SQL1 execute
+                            SQL2  execute
+                            SQL3 execute
+                            con.commit();
+                                     
+                        } catch(SQLException ex) {
+                                con.rollback();
+                        }
+                }
+        }
+
+        Declarative Tx:
+
+        class BankingService {
+                @Transactional
+                public void transferFunds(Account from, Account to, double amt){
+                     
+                            SQL1 = "update fromAcc ...";
+                            SQL2 = "update toAcc ...";
+                            SQL3 = "insert into transaction table ....";
+
+                            SQL1 execute
+                            SQL2  execute
+                            SQL3 execute
+                          
+                }
+        }
+
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.27</version>
+        </dependency>
+
+
+        List<Product> findByCategoryAndPrice(String category, double price);
+
+
+        Order has 10 items
+
+        save(order);
+        save(item1);
+        save(item2);
+        ...
+        save(item10);
+
+        delete(order);
+
+
+        save(order); 
+
+
+
+        @RestController
+        @RequestMapping("products")
+        public class ProductController {
+
+        }
+
+
+        RESTful Web Services:
+            A resource [ database, files, tagible things printer] recides on server
+            Resource can be served to the clients in various representations [ JSON, XML, CSV]
+
+
+
+        REST uses URI to identify resource
+        uses HTTP methods to identiy which method to invoke
+            GET, POST, PUT , DELETE
+
+        REST uses the following HTTP headers:
+        accept: application/json
+
+        content-type: application/json      
+
+
+        {
+            "total": 454545,
+            "customer" : {
+                "email" : "a@sg.com"
+            },
+        "items": [
+            {
+                "product" : { 
+                    "id" : 1    
+                },
+                "amount" : 3544,
+                "qty": 5
+            },
+            {
+                "product" : { 
+                    "id" : 2    
+                },
+                "amount" : 6633,
+                "qty": 2
+        }
+    ]
+}
